@@ -1,0 +1,34 @@
+{
+	"manifest_version": 3,
+	"name": "Whatsapp Price Checker",
+	"version": "1.0",
+	"author": "Alexandre Calil",
+	"description": "This extension will give you the price of cryptocurrencies",
+	"icons": {
+		"19": "icon.png"
+	},
+	"action": {
+		"default_title": "Price Checker",
+		"default_icon": "icon.png",
+		"default_popup": "index.html"
+	},
+	"content_scripts": [
+		{
+			"matches": ["https://web.whatsapp.com/"],
+			"js": ["content.js"]
+		}
+	],
+	"background": {
+		"service_worker": "background.js"
+	},
+	"permissions": [
+		"storage",
+		"tabs",
+		"activeTab",
+		"declarativeContent"
+	],
+	"host_permissions": [
+		"https://web.whatsapp.com/",
+		"https://api.nomics.com/*"
+	]
+}

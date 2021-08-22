@@ -29,15 +29,48 @@ chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	if (request.contentScriptQuery == 'getCoin') {
 		const coinId = request.coinId;
-		fetch(
-			`https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd%2Cbrl&include_market_cap=true&include_24hr_change=true`
-		)
-			.then((response) => response.json())
-			.then((data) => {
-				data.coinId = coinId;
-				sendResponse(data);
-			})
+		getCoin(coinId)
+			.then((data) => sendResponse(data))
 			.catch();
 		return true;
 	}
 });
+
+async function getCoin(coinId) {
+	try {
+		const simplePrice = await (
+			await fetch(
+				`https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd&include_market_cap=true&include_24hr_change=true`
+			)
+		).json();
+		const coinMarket = await (
+			await fetch(
+				`https://api.coingecko.com/api/v3/coins/markets?vs_currency=brl&ids=${coinId}&order=market_cap_desc&per_page=100&page=1&sparkline=false`
+			)
+		).json();
+
+		const coinInfo = await (
+			await fetch(
+				`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false&sparkline=false`
+			)
+		).json();
+
+		const data = {
+			id: coinMarket[0].id,
+			name: coinMarket[0].name,
+			symbol: coinMarket[0].symbol,
+			usd: simplePrice[coinId].usd,
+			brl: coinMarket[0].current_price,
+			marketCap: coinMarket[0].market_cap,
+			high_24h: coinMarket[0].high_24h,
+			low_24h: coinMarket[0].low_24h,
+			price_change_percentage_24h: coinMarket[0].price_change_percentage_24h,
+			homepage: coinInfo.links.homepage[0],
+			sentiment_up: coinInfo.sentiment_votes_up_percentage,
+			sentiment_down: coinInfo.sentiment_votes_down_percentage,
+		};
+		return data;
+	} catch (e) {
+		console.log('Error getting coin. ', e);
+	}
+}

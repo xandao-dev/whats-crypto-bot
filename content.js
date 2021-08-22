@@ -1,48 +1,35 @@
 const priceCommands = {
-	'/price': {
-		id: 'plant-vs-undead-token',
-		icon: '🍀',
-		name: 'PVU',
-	},
 	'/pvu': {
 		id: 'plant-vs-undead-token',
 		icon: '🍀',
-		name: 'PVU',
 	},
 	'/slp': {
 		id: 'smooth-love-potion',
 		icon: '🩸',
-		name: 'SLP',
 	},
 	'/axs': {
 		id: 'axie-infinity',
 		icon: '🪓',
-		name: 'AXS',
 	},
 	'/dnxc': {
 		id: 'dinox',
 		icon: '🦖',
-		name: 'DNXC',
 	},
 	'/pkmon': {
 		id: 'polkamonster',
 		icon: '🐲',
-		name: 'PKMON',
 	},
 	'/dpet': {
 		id: 'my-defi-pet',
 		icon: '🐶',
-		name: 'DPET',
 	},
 	'/cyt': {
 		id: 'coinary-token',
 		icon: '🐉',
-		name: 'CYT',
 	},
 	'/skill': {
 		id: 'cryptoblades',
 		icon: '⚔️',
-		name: 'SKILL',
 	},
 };
 
@@ -82,22 +69,40 @@ const publishCoinPrice = function (coinId) {
 		function (res) {
 			if (res) {
 				console.log(res);
-				const priceBrl = res[res.coinId].brl.toLocaleString('pt-br', {
+
+				const priceBrl = res.brl.toLocaleString('pt-br', {
 					minimumFractionDigits: 2,
+					maximumFractionDigits: 6,
 				});
-				const priceUsd = res[res.coinId].usd.toLocaleString('pt-br', {
+				const priceUsd = res.usd.toLocaleString('pt-br', {
 					minimumFractionDigits: 2,
+					maximumFractionDigits: 6,
 				});
-				const var24hBrl = Math.round(res[res.coinId].brl_24h_change * 100) / 100;
-				const marketCapBrl = res[res.coinId].brl_market_cap.toLocaleString('pt-br', {
+				const max24h = res.high_24h.toLocaleString('pt-br', {
 					minimumFractionDigits: 2,
+					maximumFractionDigits: 2,
+				});
+				const min24h = res.low_24h.toLocaleString('pt-br', {
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2,
+				});
+				const var24hPercentage = Math.round(res.price_change_percentage_24h * 100) / 100;
+				const marketCapBrl = res.marketCap.toLocaleString('pt-br', {
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2,
 				});
 
-				const currentCoinKey = Object.keys(priceCommands).find((key) => priceCommands[key].id === res.coinId);
+				const currentCoinKey = Object.keys(priceCommands).find((key) => priceCommands[key].id === res.id);
 				const icon = priceCommands[currentCoinKey].icon;
-				const name = priceCommands[currentCoinKey].name;
 				sendMessage(
-					`${icon} *${name} Bot* ${icon}\nO preço do ${name} é de *R$${priceBrl}* ($${priceUsd})\nA variação em 24h é de ${var24hBrl}%\nA Cap. de Mercado é de R$${marketCapBrl}`
+					`${icon} *${res.name}* ${icon}
+O preço do ${res.symbol} é de *R$${priceBrl}* ($${priceUsd})
+Máximo 24h: R$${max24h}
+Mínimo 24h: R$${min24h}
+Variação 24h: ${var24hPercentage}%
+Market Cap: R$${marketCapBrl}\n
+Sentimento positivo: ${res.sentiment_up}%
+Página do projeto: ${res.homepage}`
 				);
 			} else {
 				sendMessage(`Bot Indisponível 😢`);
@@ -119,8 +124,8 @@ const enablePriceChecker = async function () {
 			publishCoinPrice(priceCommands[lastMessage].id);
 			await timer(2500);
 		}
-		if (lastMessage === '@null') {
-			sendMessage('O cara é bom!');
+		if (lastMessage.includes('@null')) {
+			sendMessage('@null, O cara é bom!');
 			await timer(2500);
 		}
 		await timer(500);
@@ -132,7 +137,11 @@ const disablePriceChecker = function () {
 };
 
 const addListeners = function () {
-	enablePriceChecker();
+	try {
+		enablePriceChecker();
+	} catch (e) {
+		console.log(e);
+	}
 };
 
 const removeListeners = function () {

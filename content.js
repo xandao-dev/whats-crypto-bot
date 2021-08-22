@@ -111,6 +111,27 @@ Página do projeto: ${res.homepage}`
 	);
 };
 
+const publishTrending = function () {
+	chrome.runtime.sendMessage(
+		{
+			contentScriptQuery: 'getTrends',
+		},
+		function (res) {
+			if (res) {
+				console.log(res);
+
+				let message = `📈 *Trends* 📈\n`;
+				res.forEach((trend) => {
+					message += `${trend.position}: ${trend.name} (${trend.symbol})\n`;
+				});
+				sendMessage(message);
+			} else {
+				sendMessage(`Bot Indisponível 😢`);
+			}
+		}
+	);
+};
+
 const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
 /*----------------------------------------------------------*/
@@ -122,11 +143,27 @@ const enablePriceChecker = async function () {
 		const lastMessage = getLastMessage();
 		if (priceCommands.hasOwnProperty(lastMessage)) {
 			publishCoinPrice(priceCommands[lastMessage].id);
-			await timer(2500);
+			await timer(3000);
+		}
+		if (lastMessage === '/trend' || lastMessage === '/trends' || lastMessage === '/trending') {
+			publishTrending();
+			await timer(3000);
+		}
+		if (lastMessage === '/list' || lastMessage === '/commands') {
+			const commands = Object.keys(priceCommands);
+			let message = `📈 *Comandos* 📈\n`;
+			message += `/commands ou /list\n`;
+			message += `/trends\n`;
+			commands.forEach((command) => {
+				message += `${command}\n`;
+			});
+			message += `@null`;
+			sendMessage(message);
+			await timer(3000);
 		}
 		if (lastMessage.includes('@null')) {
-			sendMessage('@null, O cara é bom!');
-			await timer(2500);
+			sendMessage('O cara é bom!');
+			await timer(3000);
 		}
 		await timer(500);
 	}

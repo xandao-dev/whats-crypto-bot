@@ -34,6 +34,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			.catch();
 		return true;
 	}
+	if (request.contentScriptQuery == 'getTrends') {
+		getTrends()
+			.then((data) => sendResponse(data))
+			.catch();
+		return true;
+	}
 });
 
 async function getCoin(coinId) {
@@ -72,5 +78,22 @@ async function getCoin(coinId) {
 		return data;
 	} catch (e) {
 		console.log('Error getting coin. ', e);
+	}
+}
+
+async function getTrends() {
+	try {
+		const trends = await (await fetch(`https://api.coingecko.com/api/v3/search/trending`)).json();
+		let data = [];
+		trends.coins.forEach((coin, index) => {
+			data.push({
+				position: index + 1,
+				name: coin.item.name,
+				symbol: coin.item.symbol,
+			});
+		});
+		return data;
+	} catch (e) {
+		console.log('Error getting trends. ', e);
 	}
 }

@@ -94,12 +94,10 @@ const sendMessage = function (message) {
 
 	document.querySelector(selectors.sendMessageButton).click();
 };
-
 const getLastMessage = function () {
 	const messages = document.querySelectorAll(selectors.messages);
-	return messages[messages.length - 1].textContent;
+	return messages[messages.length - 1]?.textContent || '';
 };
-
 const publishCoinPrice = function (coinId) {
 	chrome.runtime.sendMessage(
 		{
@@ -150,7 +148,6 @@ Página do projeto: ${res.homepage}`
 		}
 	);
 };
-
 const publishTrending = function () {
 	chrome.runtime.sendMessage(
 		{
@@ -171,7 +168,6 @@ const publishTrending = function () {
 		}
 	);
 };
-
 const publishChart = function (coinId) {
 	const getChartB64 = async (prices) => {
 		const data = prices.map((p) => {
@@ -185,7 +181,7 @@ const publishChart = function (coinId) {
 				},
 			],
 			chart: {
-				height: 350,
+				height: 500,
 				type: 'line',
 				zoom: {
 					enabled: false,
@@ -268,7 +264,6 @@ const publishChart = function (coinId) {
 		}
 	);
 };
-
 const execCommand = function (lastMessage) {
 	if (lastMessage === '/list' || lastMessage === '/commands') {
 		const commands = Object.keys(priceCommands);
@@ -354,24 +349,12 @@ const disableChecker = function () {
 	botActive = false;
 };
 
-const addListeners = function () {
-	try {
-		enableChecker();
-	} catch (e) {
-		console.log(e);
-	}
-};
-
-const removeListeners = function () {
-	disableChecker();
-};
-
 //message listener for background
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	if (request.command === 'init') {
-		addListeners();
+		enableChecker();
 	} else {
-		removeListeners();
+		disableChecker();
 	}
 	sendResponse({ result: 'success' });
 });
@@ -380,9 +363,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 window.onload = function () {
 	chrome.storage.sync.get('priceCheckerEnabled', function (data) {
 		if (data.priceCheckerEnabled) {
-			addListeners();
+			enableChecker();
 		} else {
-			removeListeners();
+			disableChecker();
 		}
 	});
 };

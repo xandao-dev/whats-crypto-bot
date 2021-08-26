@@ -363,10 +363,11 @@ const publishChart = function (coinId) {
 	);
 };
 const execCommand = function (lastMessage) {
-	if (lastMessage === '/list' || lastMessage === '/commands') {
+	const lastMessageLower = lastMessage.toLowerCase();
+	if (lastMessageLower === '/list' || lastMessageLower === '/commands') {
 		const commands = Object.keys(priceCommands);
 		let message = `📈 *Comandos* 📈\n`;
-		message += `/commands\n`;
+		message += `/commands ou /list\n`;
 		message += `/criador\n`;
 		message += `/trends\n`;
 		message += `/faq-pvu\n\n`;
@@ -379,13 +380,13 @@ const execCommand = function (lastMessage) {
 		});
 		sendMessage(message);
 	}
-	if (lastMessage === '/criador') {
+	if (lastMessageLower === '/criador') {
 		sendMessage('Olá, meu nome é Alexandre Calil (@xandao6) e eu sou o criador do bot de preços do Whatsapp.');
 	}
-	if (lastMessage === '/trend' || lastMessage === '/trends' || lastMessage === '/trending') {
+	if (lastMessageLower === '/trend' || lastMessageLower === '/trends' || lastMessageLower === '/trending') {
 		publishTrending();
 	}
-	if (lastMessage === '/faq-pvu') {
+	if (lastMessageLower === '/faq-pvu') {
 		faq = `
 *FAQ PVU*
 
@@ -418,12 +419,12 @@ SÓ APARECE QUE O JOGO ESTÁ EM MANUTENÇÃO, O QUE EU FAÇO?
 		sendMessage(faq);
 	}
 
-	if (priceCommands.hasOwnProperty(lastMessage)) {
-		publishCoinPrice(priceCommands[lastMessage].id);
+	if (priceCommands.hasOwnProperty(lastMessageLower)) {
+		publishCoinPrice(priceCommands[lastMessageLower].id);
 	}
-	if (chartCommands.hasOwnProperty(lastMessage)) {
+	if (chartCommands.hasOwnProperty(lastMessageLower)) {
 		sendMessage(`Gerando gráfico...`);
-		publishChart(chartCommands[lastMessage].id);
+		publishChart(chartCommands[lastMessageLower].id);
 	}
 };
 

@@ -269,17 +269,20 @@ const publishChart = function (coinId) {
 	);
 };
 
-const execCommand = function () {
+const execCommand = function (lastMessage) {
 	if (lastMessage === '/list' || lastMessage === '/commands') {
 		const commands = Object.keys(priceCommands);
 		let message = `📈 *Comandos* 📈\n`;
 		message += `/commands\n`;
 		message += `/criador\n`;
-		message += `/trends\n\n`;
+		message += `/trends\n`;
+		message += `/faq-pvu\n\n`;
+
 		message += `*Coloque / para cotação e ! para gráfico* \n`;
 		message += `ex.: !bnb ou /slp\n\n`;
+
 		commands.forEach((command) => {
-			message += `${command.replace('/', '')}\n`;
+			message += `${command.replace('/', '')};`;
 		});
 		sendMessage(message);
 	}
@@ -289,6 +292,39 @@ const execCommand = function () {
 	if (lastMessage === '/trend' || lastMessage === '/trends' || lastMessage === '/trending') {
 		publishTrending();
 	}
+	if (lastMessage === '/faq-pvu') {
+		faq = `
+*FAQ PVU*
+
+CRIEI UMA CONTA HOJE, QUANDO POSSO JOGAR?
+-----R: Em teoria 24hrs (nada oficial), mas o ideal é tentar a cada horário (GRUPO) e após o reset 21:00h Horário Brasília.
+		
+QUANTOS PVU PRECISO PARA JOGAR?
+-----R: Min. 5 PVU para o básico, 16PVU para começar completo. Você é novato? comece pelo básico;
+		
+POSSO TER MAIS DE UMA CONTA DO PLANTS VS UNDEAD?
+-----R: Sim! Há apenas duas regras: não é permitido mais de 1 conta por dispositivo e nem mais de 2 contas por IP (roteador no caso).	
+				
+NÃO SEI EM QUAL GRUPO ESTOU!
+-----R: Tenha paciência, procure a tabela de horários feita pela comunidade e tente entrar de hora em hora até você conseguir, é assim que você descobre o grupo a qual irá pertencer.
+
+COMO FAÇO A MISSÃO DIÁRIA E O QUE GANHO?
+-----R: Para fazer a missão diária basta realizar 15 REGADAS OU CAPTURAR 5 CORVOS em plantas com -200 (quantidade de águas); Recompensa: 50 LE (GARANTIDOS) +  
+30% para cair 100x de água e 20x de espantalhos
+30% para cair 2x potes pequenos
+30% para cair 1x muda de girassol
+9,9% para cair 1x Sunflower Mama
+0,1% para soltar 1x semente (NFT que vale muito dinheiro)
+
+MEU DEUS, NÃO CONSIGO TIRAR MEU DINHEIRO O QUE HOUVE?
+-----R: Para controlar a inflação da moeda o JOGO limita você a transformar LE>PVU em 3 em 3 dias.
+
+SÓ APARECE QUE O JOGO ESTÁ EM MANUTENÇÃO, O QUE EU FAÇO?
+-----R: Pode ser que não esteja no seu grupo (sua hora de jogar), tente novamente daqui 1h. 
+		Mas também pode ser que o jogo esteja de fato em manutenção, o jogo está em uma fase BETA e em constante desenvolvimento.`;
+		sendMessage(faq);
+	}
+
 	if (priceCommands.hasOwnProperty(lastMessage)) {
 		publishCoinPrice(priceCommands[lastMessage].id);
 	}

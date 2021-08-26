@@ -27,15 +27,22 @@ chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
 });
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-	if (request.contentScriptQuery == 'getCoin') {
+	if (request.contentScriptQuery === 'getCoin') {
 		const coinId = request.coinId;
 		getCoin(coinId)
 			.then((data) => sendResponse(data))
 			.catch();
 		return true;
 	}
-	if (request.contentScriptQuery == 'getTrends') {
+	if (request.contentScriptQuery === 'getTrends') {
 		getTrends()
+			.then((data) => sendResponse(data))
+			.catch();
+		return true;
+	}
+	if (request.contentScriptQuery === 'getChart') {
+		const coinId = request.coinId;
+		getChart(coinId)
 			.then((data) => sendResponse(data))
 			.catch();
 		return true;
@@ -95,5 +102,16 @@ async function getTrends() {
 		return data;
 	} catch (e) {
 		console.log('Error getting trends. ', e);
+	}
+}
+
+async function getChart(coinId) {
+	try {
+		const chartData = await (
+			await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=brl&days=30`)
+		).json();
+		return chartData;
+	} catch (e) {
+		console.log('Error getting chart. ', e);
 	}
 }

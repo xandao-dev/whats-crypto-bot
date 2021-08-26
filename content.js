@@ -33,17 +33,57 @@ const priceCommands = {
 	},
 };
 
+const chartCommands = {
+	'!pvu': {
+		id: 'plant-vs-undead-token',
+		icon: '🍀',
+	},
+	'!slp': {
+		id: 'smooth-love-potion',
+		icon: '🩸',
+	},
+	'!axs': {
+		id: 'axie-infinity',
+		icon: '🪓',
+	},
+	'!dnxc': {
+		id: 'dinox',
+		icon: '🦖',
+	},
+	'!pkmon': {
+		id: 'polkamonster',
+		icon: '🐲',
+	},
+	'!dpet': {
+		id: 'my-defi-pet',
+		icon: '🐶',
+	},
+	'!cyt': {
+		id: 'coinary-token',
+		icon: '🐉',
+	},
+	'!skill': {
+		id: 'cryptoblades',
+		icon: '⚔️',
+	},
+};
+
 const selectors = {
 	messages: '#main span.selectable-text.copyable-text',
 	messageArea: '#main > footer div.selectable-text[contenteditable]',
 	sendMessageButton: '#main > footer > div.copyable-area > div > div > div > button',
+	// query all and get the last element
+	sendImageButton:
+		'#app > div.app-wrapper-web.font-fix > div.two > div > div > span > div > span > div > div > div > div > div > div > div > div',
 };
 let botActive;
+
+const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
 const sendMessage = function (message) {
 	window.InputEvent = window.Event || window.InputEvent;
 
-	var event = new InputEvent('input', {
+	const event = new InputEvent('input', {
 		bubbles: true,
 	});
 
@@ -132,38 +172,138 @@ const publishTrending = function () {
 	);
 };
 
-const timer = (ms) => new Promise((res) => setTimeout(res, ms));
+const publishChart = function (coinId) {
+	const getChartB64 = async (prices) => {
+		const data = prices.map((p) => {
+			return { x: new Date(p[0]), y: p[1] };
+		});
+		const options = {
+			series: [
+				{
+					name: 'Preço',
+					data: data,
+				},
+			],
+			chart: {
+				height: 350,
+				type: 'line',
+				zoom: {
+					enabled: false,
+				},
+			},
+			dataLabels: {
+				enabled: false,
+			},
+			stroke: {
+				curve: 'straight',
+			},
+			title: {
+				text: 'Gráfico',
+				align: 'center',
+			},
+			grid: {
+				row: {
+					colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+					opacity: 0.5,
+				},
+			},
+			xaxis: {
+				type: 'datetime',
+			},
+			yaxis: {
+				tooltip: {
+					enabled: true,
+				},
+			},
+		};
+
+		const chartDiv = document.createElement('div');
+		chartDiv.setAttribute('id', 'temp-chart');
+		const body = document.querySelector('body');
+		body.appendChild(chartDiv);
+		const tempChart = document.querySelector('#temp-chart');
+
+		const chart = new ApexCharts(tempChart, options);
+		chart.render();
+		await timer(3000);
+		const { imgURI } = await chart.dataURI();
+		tempChart.remove();
+
+		return imgURI;
+	};
+	const b64toBlob = async (b64Data) => {
+		const res = await fetch(b64Data);
+		const blob = await res.blob();
+		return blob;
+	};
+	const setToClipboard = async (blob) => {
+		await navigator.clipboard.writeText('');
+		const data = [new ClipboardItem({ [blob.type]: blob })];
+		await navigator.clipboard.write(data);
+	};
+	const sendChart = async () => {
+		const messageArea = document.querySelector(selectors.messageArea);
+		messageArea.focus();
+		document.execCommand('paste', null, null);
+		await timer(2000);
+		const buttons = document.querySelectorAll(selectors.sendImageButton);
+		const sendImageButton = buttons[buttons.length - 1];
+		sendImageButton.click();
+	};
+	chrome.runtime.sendMessage(
+		{
+			contentScriptQuery: 'getChart',
+			coinId: coinId,
+		},
+		async function (res) {
+			console.log('res: ', res);
+			if (res) {
+				const chartB64 = await getChartB64(res.prices);
+				const chartBlob = await b64toBlob(chartB64);
+				await setToClipboard(chartBlob);
+				await sendChart();
+			} else {
+				sendMessage(`Bot Indisponível 😢`);
+			}
+		}
+	);
+};
 
 /*----------------------------------------------------------*/
 
 const enablePriceChecker = async function () {
-	console.log('PRICE CHECK ACTIVE');
 	botActive = true;
 	while (botActive) {
 		const lastMessage = getLastMessage();
 		if (priceCommands.hasOwnProperty(lastMessage)) {
 			publishCoinPrice(priceCommands[lastMessage].id);
-			await timer(3000);
+			await timer(5000);
+		}
+		if (chartCommands.hasOwnProperty(lastMessage)) {
+			sendMessage(`Gerando gráfico...`);
+			publishChart(chartCommands[lastMessage].id);
+			await timer(5000);
 		}
 		if (lastMessage === '/trend' || lastMessage === '/trends' || lastMessage === '/trending') {
 			publishTrending();
-			await timer(3000);
+			await timer(5000);
 		}
 		if (lastMessage === '/list' || lastMessage === '/commands') {
 			const commands = Object.keys(priceCommands);
 			let message = `📈 *Comandos* 📈\n`;
-			message += `/commands ou /list\n`;
-			message += `/trends\n`;
+			message += `/commands\n`;
+			message += `/owner\n`;
+			message += `/trends\n\n`;
+			message += `*Coloque \\ para cotação e ! para gráfico* \n`;
 			commands.forEach((command) => {
-				message += `${command}\n`;
+				message += `${command.replace('/', '')}\n`;
 			});
-			message += `@null`;
 			sendMessage(message);
-			await timer(3000);
+			await timer(5000);
 		}
-		if (lastMessage.includes('@null')) {
-			sendMessage('O cara é bom!');
-			await timer(3000);
+		if (lastMessage === '/owner') {
+			sendMessage('Olá, meu nome é Alexandre Calil (@xandao6) e eu sou o criador do bot de preços do Whatsapp.');
+			await timer(5000);
 		}
 		await timer(500);
 	}

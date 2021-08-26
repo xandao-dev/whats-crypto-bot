@@ -15,7 +15,8 @@
 	"content_scripts": [
 		{
 			"matches": ["https://web.whatsapp.com/"],
-			"js": ["content.js"]
+			"css": ["apexcharts.css"],
+			"js": ["apexcharts.min.js","content.js"]
 		}
 	],
 	"background": {
@@ -25,10 +26,11 @@
 		"storage",
 		"tabs",
 		"activeTab",
-		"declarativeContent"
+		"declarativeContent",
+		"clipboardRead",
+		"clipboardWrite"
 	],
 	"host_permissions": [
-		"https://web.whatsapp.com/",
-		"https://api.nomics.com/*"
+		"https://web.whatsapp.com/"
 	]
 }

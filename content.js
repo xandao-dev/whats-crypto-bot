@@ -338,9 +338,9 @@ const enableChecker = async function () {
 		const lastMessage = getLastMessage();
 		if (lastMessage !== lastMessageTemp) {
 			execCommand(lastMessage);
-			await timer(5000);
+			await timer(4000);
 		}
-		await timer(500);
+		await timer(250);
 		lastMessageTemp = lastMessage;
 	}
 };

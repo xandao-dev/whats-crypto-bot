@@ -269,60 +269,65 @@ const publishChart = function (coinId) {
 	);
 };
 
-/*----------------------------------------------------------*/
-
-const enablePriceChecker = async function () {
-	botActive = true;
-	while (botActive) {
-		const lastMessage = getLastMessage();
-		if (priceCommands.hasOwnProperty(lastMessage)) {
-			publishCoinPrice(priceCommands[lastMessage].id);
-			await timer(5000);
-		}
-		if (chartCommands.hasOwnProperty(lastMessage)) {
-			sendMessage(`Gerando gráfico...`);
-			publishChart(chartCommands[lastMessage].id);
-			await timer(5000);
-		}
-		if (lastMessage === '/trend' || lastMessage === '/trends' || lastMessage === '/trending') {
-			publishTrending();
-			await timer(5000);
-		}
-		if (lastMessage === '/list' || lastMessage === '/commands') {
-			const commands = Object.keys(priceCommands);
-			let message = `📈 *Comandos* 📈\n`;
-			message += `/commands\n`;
-			message += `/owner\n`;
-			message += `/trends\n\n`;
-			message += `*Coloque / para cotação e ! para gráfico* \n`;
-			commands.forEach((command) => {
-				message += `${command.replace('/', '')}\n`;
-			});
-			sendMessage(message);
-			await timer(5000);
-		}
-		if (lastMessage === '/owner') {
-			sendMessage('Olá, meu nome é Alexandre Calil (@xandao6) e eu sou o criador do bot de preços do Whatsapp.');
-			await timer(5000);
-		}
-		await timer(500);
+const execCommand = function () {
+	if (lastMessage === '/list' || lastMessage === '/commands') {
+		const commands = Object.keys(priceCommands);
+		let message = `📈 *Comandos* 📈\n`;
+		message += `/commands\n`;
+		message += `/criador\n`;
+		message += `/trends\n\n`;
+		message += `*Coloque / para cotação e ! para gráfico* \n`;
+		message += `ex.: !bnb ou /slp\n\n`;
+		commands.forEach((command) => {
+			message += `${command.replace('/', '')}\n`;
+		});
+		sendMessage(message);
+	}
+	if (lastMessage === '/criador') {
+		sendMessage('Olá, meu nome é Alexandre Calil (@xandao6) e eu sou o criador do bot de preços do Whatsapp.');
+	}
+	if (lastMessage === '/trend' || lastMessage === '/trends' || lastMessage === '/trending') {
+		publishTrending();
+	}
+	if (priceCommands.hasOwnProperty(lastMessage)) {
+		publishCoinPrice(priceCommands[lastMessage].id);
+	}
+	if (chartCommands.hasOwnProperty(lastMessage)) {
+		sendMessage(`Gerando gráfico...`);
+		publishChart(chartCommands[lastMessage].id);
 	}
 };
 
-const disablePriceChecker = function () {
+/*----------------------------------------------------------*/
+
+const enableChecker = async function () {
+	botActive = true;
+	let lastMessageTemp = '';
+	while (botActive) {
+		const lastMessage = getLastMessage();
+		if (lastMessage !== lastMessageTemp) {
+			execCommand(lastMessage);
+			await timer(5000);
+		}
+		await timer(500);
+		lastMessageTemp = lastMessage;
+	}
+};
+
+const disableChecker = function () {
 	botActive = false;
 };
 
 const addListeners = function () {
 	try {
-		enablePriceChecker();
+		enableChecker();
 	} catch (e) {
 		console.log(e);
 	}
 };
 
 const removeListeners = function () {
-	disablePriceChecker();
+	disableChecker();
 };
 
 //message listener for background

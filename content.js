@@ -31,6 +31,50 @@ const priceCommands = {
 		id: 'cryptoblades',
 		icon: '⚔️',
 	},
+	'/mist': {
+		id: 'mist',
+		icon: '🧙🏼‍♂️',
+	},
+	'/derc': {
+		id: 'derace',
+		icon: '🐎',
+	},
+	'/mbox': {
+		id: 'mobox',
+		icon: '💵',
+	},
+	'/sps': {
+		id: 'splinterlands',
+		icon: '🃏',
+	},
+	'/ilv': {
+		id: 'illuvium',
+		icon: '💎',
+	},
+	'/btc': {
+		id: 'bitcoin',
+		icon: '🪙',
+	},
+	'/eth': {
+		id: 'ethereum',
+		icon: '🪙',
+	},
+	'/doge': {
+		id: 'dogecoin',
+		icon: '🪙',
+	},
+	'/shib': {
+		id: 'shiba-inu',
+		icon: '🪙',
+	},
+	'/matic': {
+		id: 'polygon',
+		icon: '🪙',
+	},
+	'/ada': {
+		id: 'cardano',
+		icon: '🪙',
+	},
 };
 
 const chartCommands = {
@@ -65,6 +109,46 @@ const chartCommands = {
 	'!skill': {
 		id: 'cryptoblades',
 		icon: '⚔️',
+	},
+	'!derc': {
+		id: 'derace',
+		icon: '🐎',
+	},
+	'!mbox': {
+		id: 'mobox',
+		icon: '💵',
+	},
+	'!sps': {
+		id: 'splinterlands',
+		icon: '🃏',
+	},
+	'!ilv': {
+		id: 'illuvium',
+		icon: '💎',
+	},
+	'!btc': {
+		id: 'bitcoin',
+		icon: '🪙',
+	},
+	'!eth': {
+		id: 'ethereum',
+		icon: '🪙',
+	},
+	'!doge': {
+		id: 'dogecoin',
+		icon: '🪙',
+	},
+	'!shib': {
+		id: 'shiba-inu',
+		icon: '🪙',
+	},
+	'!matic': {
+		id: 'polygon',
+		icon: '🪙',
+	},
+	'!ada': {
+		id: 'cardano',
+		icon: '🪙',
 	},
 };
 

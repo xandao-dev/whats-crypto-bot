@@ -139,8 +139,7 @@ Máximo 24h: R$${max24h}
 Mínimo 24h: R$${min24h}
 Variação 24h: ${var24hPercentage}%
 Market Cap: R$${marketCapBrl}\n
-Sentimento positivo: ${res.sentiment_up}%
-Página do projeto: ${res.homepage}`
+Sentimento positivo: ${res.sentiment_up}%`
 				);
 			} else {
 				sendMessage(`Bot Indisponível 😢`);

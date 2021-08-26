@@ -107,10 +107,21 @@ async function getTrends() {
 
 async function getChart(coinId) {
 	try {
-		const chartData = await (
-			await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=brl&days=30`)
+		const coinMarket = await (
+			await fetch(
+				`https://api.coingecko.com/api/v3/coins/markets?vs_currency=brl&ids=${coinId}&order=market_cap_desc&per_page=100&page=1&sparkline=false`
+			)
 		).json();
-		return chartData;
+
+		const chartData = await (
+			await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=brl&days=15`)
+		).json();
+
+		const data = {
+			prices: chartData.prices,
+			name: coinMarket[0].name,
+		};
+		return data;
 	} catch (e) {
 		console.log('Error getting chart. ', e);
 	}

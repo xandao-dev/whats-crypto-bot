@@ -157,6 +157,7 @@ const publishTrending = function () {
 				console.log(res);
 
 				let message = `📈 *Trends* 📈\n`;
+				message += `Top 7 na CoinGecko (24h)\n`;
 				res.forEach((trend) => {
 					message += `${trend.position}: ${trend.name} (${trend.symbol})\n`;
 				});
@@ -168,7 +169,7 @@ const publishTrending = function () {
 	);
 };
 const publishChart = function (coinId) {
-	const getChartB64 = async (prices) => {
+	const getChartB64 = async (prices, coinName) => {
 		const data = prices.map((p) => {
 			return { x: new Date(p[0]), y: p[1] };
 		});
@@ -181,24 +182,31 @@ const publishChart = function (coinId) {
 			],
 			chart: {
 				height: 500,
-				type: 'line',
-				zoom: {
-					enabled: false,
-				},
+				type: 'area',
 			},
 			dataLabels: {
 				enabled: false,
 			},
 			stroke: {
-				curve: 'straight',
+				curve: 'smooth',
+				width: 1.5,
+			},
+			fill: {
+				type: 'gradient',
+				gradient: {
+					shadeIntensity: 1,
+					opacityFrom: 0.7,
+					opacityTo: 0.9,
+					stops: [0, 90, 100],
+				},
 			},
 			title: {
-				text: 'Gráfico',
+				text: `${coinName} (15d)`,
 				align: 'center',
 			},
 			grid: {
 				row: {
-					colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+					colors: ['#f3f3f3'], // takes an array which will be repeated on columns
 					opacity: 0.5,
 				},
 			},
@@ -206,8 +214,15 @@ const publishChart = function (coinId) {
 				type: 'datetime',
 			},
 			yaxis: {
-				tooltip: {
-					enabled: true,
+				labels: {
+					formatter: function (value) {
+						const format = (num, decimals) =>
+							num.toLocaleString('pt-BR', {
+								minimumFractionDigits: decimals,
+								maximumFractionDigits: decimals,
+							});
+						return `R$ ${format(value, 4)}`;
+					},
 				},
 			},
 		};
@@ -253,7 +268,7 @@ const publishChart = function (coinId) {
 		async function (res) {
 			console.log('res: ', res);
 			if (res) {
-				const chartB64 = await getChartB64(res.prices);
+				const chartB64 = await getChartB64(res.prices, res.name);
 				const chartBlob = await b64toBlob(chartB64);
 				await setToClipboard(chartBlob);
 				await sendChart();

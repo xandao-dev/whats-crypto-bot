@@ -294,7 +294,7 @@ const enablePriceChecker = async function () {
 			message += `/commands\n`;
 			message += `/owner\n`;
 			message += `/trends\n\n`;
-			message += `*Coloque \\ para cotação e ! para gráfico* \n`;
+			message += `*Coloque / para cotação e ! para gráfico* \n`;
 			commands.forEach((command) => {
 				message += `${command.replace('/', '')}\n`;
 			});

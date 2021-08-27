@@ -31,6 +31,10 @@ const priceCommands = {
 		id: 'cryptoblades',
 		icon: '⚔️',
 	},
+	'/bin': {
+		id: 'binemon',
+		icon: '🦧',
+	},
 	'/mist': {
 		id: 'mist',
 		icon: '🧙🏼‍♂️',
@@ -113,6 +117,10 @@ const chartCommands = {
 	'!skill': {
 		id: 'cryptoblades',
 		icon: '⚔️',
+	},
+	'!bin': {
+		id: 'binemon',
+		icon: '🦧',
 	},
 	'!derc': {
 		id: 'derace',

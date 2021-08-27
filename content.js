@@ -60,7 +60,7 @@ const priceCommands = {
 		icon: '🪙',
 	},
 	'/bnb': {
-		id: 'binance-coin',
+		id: 'binancecoin',
 		icon: '🪙',
 	},
 	'/eth': {
@@ -143,7 +143,7 @@ const chartCommands = {
 		icon: '🪙',
 	},
 	'!bnb': {
-		id: 'binance-coin',
+		id: 'binancecoin',
 		icon: '🪙',
 	},
 	'!eth': {

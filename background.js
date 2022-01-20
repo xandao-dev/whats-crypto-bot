@@ -8,6 +8,7 @@
 //
 // See https://developer.chrome.com/docs/extensions/reference/events/ for additional details.
 chrome.runtime.onInstalled.addListener(function () {
+	console.log('Price Watcher Extension installed.');
 	chrome.storage.sync.set({ priceCheckerEnabled: false }, function () {
 		console.log('Price Checker installed!');
 	});
@@ -30,6 +31,7 @@ chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
 });
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+	console.log('Received message from content script.');
 	if (request.contentScriptQuery === 'getCoin') {
 		const coinId = request.coinId;
 		getCoin(coinId)

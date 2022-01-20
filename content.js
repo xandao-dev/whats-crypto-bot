@@ -171,14 +171,12 @@ const chartCommands = {
 const selectors = {
 	/*General*/
 	messages: '#main div.focusable-list-item[class*=message]',
+	messageIdentifier: '.selectable-text.copyable-text',
 	messageArea: '#main > footer div.selectable-text[contenteditable]',
 	sendMessageButton: '#main > footer button > [data-icon*=send]',
 
 	/*Price Graph*/
-	// query all and get the last element
-	// #app div[role=button] > [data-icon*=send]
-	sendImageButton:
-		'#app > div.app-wrapper-web.font-fix > div.two > div > div > span > div > span > div > div > div > div > div > div > div > div',
+	sendImageButton: '#app div[role=button] > [data-icon*=send]',
 };
 let priceChecker;
 let priceGraph;
@@ -201,7 +199,9 @@ const sendMessage = function (message) {
 };
 const getLastMessage = function () {
 	const messages = document.querySelectorAll(selectors.messages);
-	return messages[messages.length - 1]?.textContent || '';
+	const lastMessageElement = messages[messages.length - 1];
+	const lastMessage = lastMessageElement?.querySelector(selectors.messageIdentifier);
+	return lastMessage?.textContent || '';
 };
 const publishCoinPrice = function (coinId) {
 	chrome.runtime.sendMessage(
@@ -361,8 +361,7 @@ const publishChart = function (coinId) {
 		messageArea.focus();
 		document.execCommand('paste', null, null);
 		await timer(2000);
-		const buttons = document.querySelectorAll(selectors.sendImageButton);
-		const sendImageButton = buttons[buttons.length - 1];
+		const sendImageButton = document.querySelector(selectors.sendImageButton);
 		sendImageButton.click();
 	};
 	chrome.runtime.sendMessage(
@@ -373,10 +372,14 @@ const publishChart = function (coinId) {
 		async function (res) {
 			console.log('res: ', res);
 			if (res) {
-				const chartB64 = await getChartB64(res.prices, res.name);
-				const chartBlob = await b64toBlob(chartB64);
-				await setToClipboard(chartBlob);
-				await sendChart();
+				try {
+					const chartB64 = await getChartB64(res.prices, res.name);
+					const chartBlob = await b64toBlob(chartB64);
+					await setToClipboard(chartBlob);
+					await sendChart();
+				} catch (e) {
+					console.error('Error sending chat, check if whatsapp is focused');
+				}
 			} else {
 				sendMessage(`Bot Indisponível 😢`);
 			}
@@ -384,7 +387,7 @@ const publishChart = function (coinId) {
 	);
 };
 const execCommand = function (lastMessage) {
-	const lastMessageLower = lastMessage.toLowerCase();
+	const lastMessageLower = lastMessage?.toLowerCase();
 	if (lastMessageLower === '/list' || lastMessageLower === '/commands') {
 		const commands = Object.keys(priceCommands);
 		let message = `📈 *Comandos* 📈\n`;
@@ -424,6 +427,7 @@ const enablePriceChecker = async function () {
 	while (priceChecker) {
 		const lastMessage = getLastMessage();
 		if (lastMessage !== lastMessageTemp && lastMessage.startsWith('/')) {
+			// console.log(`Last message: ${lastMessage}`);
 			execCommand(lastMessage);
 			await timer(4000);
 		}
@@ -442,6 +446,7 @@ const enablePriceGraph = async function () {
 	while (priceGraph) {
 		const lastMessage = getLastMessage();
 		if (lastMessage !== lastMessageTemp && lastMessage.startsWith('!')) {
+			// console.log(`Last message: ${lastMessage}`);
 			execCommand(lastMessage);
 			await timer(4000);
 		}

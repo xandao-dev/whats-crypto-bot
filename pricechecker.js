@@ -12,7 +12,6 @@ chrome.storage.sync.get('priceGraphEnabled', function (data) {
 
 togglePriceCheckerEl.onchange = function (element) {
 	let value = this.checked;
-
 	//update the extension storage value
 	chrome.storage.sync.set({ priceCheckerEnabled: value }, function () {
 		console.log('Price checker status: ' + value);
@@ -25,7 +24,7 @@ togglePriceCheckerEl.onchange = function (element) {
 				tabs[0].id,
 				{ command: 'init-price-checker', priceCheckerEnabled: value },
 				function (response) {
-					console.log(response.result);
+					console.log(`Init Price Checker Response: ${response?.result}`);
 				}
 			);
 		});
@@ -35,7 +34,7 @@ togglePriceCheckerEl.onchange = function (element) {
 				tabs[0].id,
 				{ command: 'remove-price-checker', priceCheckerEnabled: value },
 				function (response) {
-					console.log(response.result);
+					console.log(`Remove Price Checker Response: ${response?.result}`);
 				}
 			);
 		});

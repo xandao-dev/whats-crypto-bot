@@ -1,19 +1,17 @@
 <br />
 <p align="center">
   <h3 align="center">Whats Crypto Bot</h3>
-
   <p align="center">
     Whats Crypto Bot is a cryptocurrency price quote robot running on a Chrome Extension. It can listen to commands sent in whatsapp groups and conversations and respond with current currency rate. Check the images below to understand better.
-  <br />
-	<br />
-  <a href="https://github.com/xandao6/whats-crypto-bot"><strong>Explore the docs »</strong></a>
-  <br />
-  <a href="https://github.com/xandao6/whats-crypto-bot/issue">Report Bug</a>
-  ·
-  <a href="https://github.com/xandao6/whats-crypto-bot/issues">Request Feature</a>
+    <br />
+    <br />
+    <a href="https://github.com/xandao6/whats-crypto-bot"><strong>Explore the docs »</strong></a>
+    <br />
+    <a href="https://github.com/xandao6/whats-crypto-bot/issue">Report Bug</a>
+    ·
+    <a href="https://github.com/xandao6/whats-crypto-bot/issues">Request Feature</a>
   </p>
 </p>
-
 
 
 <!-- TABLE OF CONTENTS -->
@@ -52,6 +50,8 @@
 	
 https://user-images.githubusercontent.com/22106326/150383534-27de4827-bd12-46bb-87cd-0f6698673f40.mp4
 </div>
+
+
 ### Features
 
 * Get cryptocurrency quotation live on whatsapp
@@ -78,7 +78,7 @@ To get a local copy up and running follow these simple steps.
    ```
 2. Install Extension on Chrome
 
-    1. Open [Chrome Extensions Website](chrome://extensions/)
+    1. Open Chrome Extensions Website: chrome://extensions/
     2. Click in "Load unpacked"
     3. Select the whats-crypto-bot folder
 
@@ -112,7 +112,10 @@ Contributions are what make the open source community such an amazing place to b
 <!-- LICENSE -->
 ## License
 
-All rights reserved.
+Distributed under the MIT License. See [LICENSE](./LICENSE.md) for more information.
+
+Free software =)
+
 
 <!-- CONTACT -->
 ## Contact

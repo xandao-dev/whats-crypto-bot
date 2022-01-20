@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "Whatsapp Price Checker",
-	"version": "1.0",
+	"version": "1.0.1",
 	"author": "Alexandre Calil",
 	"description": "This extension will give you the price of cryptocurrencies",
 	"icons": {
@@ -14,9 +14,16 @@
 	},
 	"content_scripts": [
 		{
-			"matches": ["https://web.whatsapp.com/"],
-			"css": ["apexcharts.css"],
-			"js": ["apexcharts.min.js","content.js"]
+			"matches": [
+				"https://web.whatsapp.com/"
+			],
+			"css": [
+				"apexcharts.css"
+			],
+			"js": [
+				"apexcharts.min.js",
+				"content.js"
+			]
 		}
 	],
 	"background": {

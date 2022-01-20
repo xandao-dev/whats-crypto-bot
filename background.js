@@ -7,9 +7,12 @@
 // * addListener - what we want to do with this event
 //
 // See https://developer.chrome.com/docs/extensions/reference/events/ for additional details.
-chrome.runtime.onInstalled.addListener(async () => {
+chrome.runtime.onInstalled.addListener(function () {
 	chrome.storage.sync.set({ priceCheckerEnabled: false }, function () {
 		console.log('Price Checker installed!');
+	});
+	chrome.storage.sync.set({ priceGraphEnabled: false }, function () {
+		console.log('Price Graph installed!');
 	});
 });
 

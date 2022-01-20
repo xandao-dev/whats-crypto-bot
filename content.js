@@ -169,14 +169,19 @@ const chartCommands = {
 };
 
 const selectors = {
-	messages: '#main span.selectable-text.copyable-text',
+	/*General*/
+	messages: '#main div.focusable-list-item[class*=message]',
 	messageArea: '#main > footer div.selectable-text[contenteditable]',
-	sendMessageButton: '#main > footer > div.copyable-area > div > div > div > button',
+	sendMessageButton: '#main > footer button > [data-icon*=send]',
+
+	/*Price Graph*/
 	// query all and get the last element
+	// #app div[role=button] > [data-icon*=send]
 	sendImageButton:
 		'#app > div.app-wrapper-web.font-fix > div.two > div > div > span > div > span > div > div > div > div > div > div > div > div',
 };
-let botActive;
+let priceChecker;
+let priceGraph;
 
 const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -384,9 +389,8 @@ const execCommand = function (lastMessage) {
 		const commands = Object.keys(priceCommands);
 		let message = `📈 *Comandos* 📈\n`;
 		message += `/commands ou /list\n`;
-		message += `/criador\n`;
-		message += `/trends\n`;
-		message += `/faq-pvu\n\n`;
+		message += `/creator\n`;
+		message += `/trends\n\n`;
 
 		message += `*Coloque / para cotação e ! para gráfico* \n`;
 		message += `ex.: !bnb ou /slp\n\n`;
@@ -396,43 +400,11 @@ const execCommand = function (lastMessage) {
 		});
 		sendMessage(message);
 	}
-	if (lastMessageLower === '/criador') {
+	if (lastMessageLower === '/creator') {
 		sendMessage('Olá, meu nome é Alexandre Calil (@xandao6) e eu sou o criador do bot de preços do Whatsapp.');
 	}
 	if (lastMessageLower === '/trend' || lastMessageLower === '/trends' || lastMessageLower === '/trending') {
 		publishTrending();
-	}
-	if (lastMessageLower === '/faq-pvu') {
-		faq = `
-*FAQ PVU*
-
-CRIEI UMA CONTA HOJE, QUANDO POSSO JOGAR?
------R: Em teoria 24hrs (nada oficial), mas o ideal é tentar a cada horário (GRUPO) e após o reset 21:00h Horário Brasília.
-		
-QUANTOS PVU PRECISO PARA JOGAR?
------R: Min. 5 PVU para o básico, 16PVU para começar completo. Você é novato? comece pelo básico;
-		
-POSSO TER MAIS DE UMA CONTA DO PLANTS VS UNDEAD?
------R: Sim! Há apenas duas regras: não é permitido mais de 1 conta por dispositivo e nem mais de 2 contas por IP (roteador no caso).	
-				
-NÃO SEI EM QUAL GRUPO ESTOU!
------R: Tenha paciência, procure a tabela de horários feita pela comunidade e tente entrar de hora em hora até você conseguir, é assim que você descobre o grupo a qual irá pertencer.
-
-COMO FAÇO A MISSÃO DIÁRIA E O QUE GANHO?
------R: Para fazer a missão diária basta realizar 15 REGADAS OU CAPTURAR 5 CORVOS em plantas com -200 (quantidade de águas); Recompensa: 50 LE (GARANTIDOS) +  
-30% para cair 100x de água e 20x de espantalhos
-30% para cair 2x potes pequenos
-30% para cair 1x muda de girassol
-9,9% para cair 1x Sunflower Mama
-0,1% para soltar 1x semente (NFT que vale muito dinheiro)
-
-MEU DEUS, NÃO CONSIGO TIRAR MEU DINHEIRO O QUE HOUVE?
------R: Para controlar a inflação da moeda o JOGO limita você a transformar LE>PVU em 3 em 3 dias.
-
-SÓ APARECE QUE O JOGO ESTÁ EM MANUTENÇÃO, O QUE EU FAÇO?
------R: Pode ser que não esteja no seu grupo (sua hora de jogar), tente novamente daqui 1h. 
-		Mas também pode ser que o jogo esteja de fato em manutenção, o jogo está em uma fase BETA e em constante desenvolvimento.`;
-		sendMessage(faq);
 	}
 
 	if (priceCommands.hasOwnProperty(lastMessageLower)) {
@@ -446,12 +418,12 @@ SÓ APARECE QUE O JOGO ESTÁ EM MANUTENÇÃO, O QUE EU FAÇO?
 
 /*----------------------------------------------------------*/
 
-const enableChecker = async function () {
-	botActive = true;
+const enablePriceChecker = async function () {
+	priceChecker = true;
 	let lastMessageTemp = '';
-	while (botActive) {
+	while (priceChecker) {
 		const lastMessage = getLastMessage();
-		if (lastMessage !== lastMessageTemp) {
+		if (lastMessage !== lastMessageTemp && lastMessage.startsWith('/')) {
 			execCommand(lastMessage);
 			await timer(4000);
 		}
@@ -460,17 +432,42 @@ const enableChecker = async function () {
 	}
 };
 
-const disableChecker = function () {
-	botActive = false;
+const disablePriceChecker = function () {
+	priceChecker = false;
+};
+
+const enablePriceGraph = async function () {
+	priceGraph = true;
+	let lastMessageTemp = '';
+	while (priceGraph) {
+		const lastMessage = getLastMessage();
+		if (lastMessage !== lastMessageTemp && lastMessage.startsWith('!')) {
+			execCommand(lastMessage);
+			await timer(4000);
+		}
+		await timer(250);
+		lastMessageTemp = lastMessage;
+	}
+};
+
+const disablePriceGraph = function () {
+	priceGraph = false;
 };
 
 //message listener for background
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-	if (request.command === 'init') {
-		enableChecker();
-	} else {
-		disableChecker();
+	if (request.command === 'init-price-checker') {
+		enablePriceChecker();
+	} else if (request.command === 'remove-price-checker') {
+		disablePriceChecker();
 	}
+
+	if (request.command === 'init-price-graph') {
+		enablePriceGraph();
+	} else if (request.command === 'remove-price-graph') {
+		disablePriceGraph();
+	}
+
 	sendResponse({ result: 'success' });
 });
 
@@ -478,9 +475,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 window.onload = function () {
 	chrome.storage.sync.get('priceCheckerEnabled', function (data) {
 		if (data.priceCheckerEnabled) {
-			enableChecker();
+			enablePriceChecker();
 		} else {
-			disableChecker();
+			disablePriceChecker();
+		}
+	});
+	chrome.storage.sync.get('priceGraphEnabled', function (data) {
+		if (data.priceGraphEnabled) {
+			enablePriceGraph();
+		} else {
+			disablePriceGraph();
 		}
 	});
 };

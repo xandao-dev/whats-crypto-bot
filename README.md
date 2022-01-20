@@ -47,13 +47,11 @@
 
 <div align="center">
   <a href="https://github.com/xandao6/whats-crypto-bot">
-    Commands
     <img src="images/commands.png" alt="Bot commands">
-    Usage
-    <video src="bot.mp4"> 
   </a>
+	
+https://user-images.githubusercontent.com/22106326/150383534-27de4827-bd12-46bb-87cd-0f6698673f40.mp4
 </div>
-
 ### Features
 
 * Get cryptocurrency quotation live on whatsapp

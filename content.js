@@ -404,7 +404,7 @@ const execCommand = function (lastMessage) {
 		sendMessage(message);
 	}
 	if (lastMessageLower === '/creator') {
-		sendMessage('Olá, meu nome é Alexandre Calil (@xandao6) e eu sou o criador do bot de preços do Whatsapp.');
+		sendMessage('Olá, meu nome é Alexandre Calil (xandao-dev) e eu sou o criador do bot de preços do Whatsapp.');
 	}
 	if (lastMessageLower === '/trend' || lastMessageLower === '/trends' || lastMessageLower === '/trending') {
 		publishTrending();
